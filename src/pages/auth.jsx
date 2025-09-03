@@ -30,7 +30,7 @@ const Auth = () => {
   }, []);
   return (
     <div className="min-h-screen bg-bg-DEFAULT dark:bg-gray-900 flex">
-      {/* Left Side - Animation & Branding */}
+      {/* Left Side - Animation and Branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-brand-blue-500 to-brand-blue-400 relative overflow-hidden">
         {/* Background Grain */}
         <div className="absolute inset-0 grain opacity-30" />
