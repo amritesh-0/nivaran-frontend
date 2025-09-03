@@ -8,7 +8,7 @@ import Features from '../components/Features';
 import CallToAction from '../components/CallToAction';
 import Footer from '../components/Footer';
 
-const Home = () => {
+const Home = ({ onNavigateToAuth }) => {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -17,12 +17,12 @@ const Home = () => {
       className="min-h-screen bg-bg-DEFAULT dark:bg-gray-900"
       aria-label="Home Page"
     >
-      <Header />
+      <Header onNavigateToAuth={onNavigateToAuth} />
       <main aria-label="Main Content">
-        <Hero />
+        <Hero onNavigateToAuth={onNavigateToAuth} />
         <HowItWorks />
         <Features />
-        <CallToAction />
+        <CallToAction onNavigateToAuth={onNavigateToAuth} />
       </main>
       <Footer />
     </motion.div>

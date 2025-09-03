@@ -4,7 +4,7 @@ import { Bars3Icon, XMarkIcon, ShieldCheckIcon } from '@heroicons/react/24/outli
 import Container from './common/Container';
 import Button from './common/Button';
 
-const Header = () => {
+const Header = ({ onNavigateToAuth }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -77,10 +77,19 @@ const Header = () => {
 
           {/* DESKTOP BUTTONS */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="outline" size="sm" aria-label="Admin Sign In">
+            <Button
+              variant="outline"
+              size="sm"
+              aria-label="Admin Sign In"
+              onClick={onNavigateToAuth}
+            >
               Admin Sign In
             </Button>
-            <Button size="sm" aria-label="Report an Issue">
+            <Button
+              size="sm"
+              aria-label="Report an Issue"
+              onClick={onNavigateToAuth}
+            >
               Report an Issue
             </Button>
           </div>
@@ -137,10 +146,16 @@ const Header = () => {
                     size="sm"
                     className="w-full"
                     aria-label="Admin Sign In"
+                    onClick={onNavigateToAuth}
                   >
                     Admin Sign In
                   </Button>
-                  <Button size="sm" className="w-full" aria-label="Report an Issue">
+                  <Button
+                    size="sm"
+                    className="w-full"
+                    aria-label="Report an Issue"
+                    onClick={onNavigateToAuth}
+                  >
                     Report an Issue
                   </Button>
                 </div>

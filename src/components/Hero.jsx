@@ -12,7 +12,7 @@ const heroStats = [
   { label: 'Coverage', value: 'City-wide' },
 ];
 
-const Hero = () => {
+const Hero = ({ onNavigateToAuth }) => {
   const [animationData, setAnimationData] = useState(null);
   const [animationError, setAnimationError] = useState(false);
   const [cleanAnimationData, setCleanAnimationData] = useState(null);
@@ -182,6 +182,7 @@ const Hero = () => {
                 size="lg"
                 aria-label="Start Reporting"
                 className="focus-visible:ring-4 focus-visible:ring-[#5B9DFF]"
+                onClick={onNavigateToAuth}
               >
                 Start Reporting
               </Button>

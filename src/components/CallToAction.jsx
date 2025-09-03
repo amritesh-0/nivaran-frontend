@@ -6,7 +6,7 @@ import Button from './common/Button';
 
 const Lottie = lazy(() => import('lottie-react'));
 
-const CallToAction = () => {
+const CallToAction = ({ onNavigateToAuth }) => {
   const [animationData, setAnimationData] = useState(null);
   const [animationError, setAnimationError] = useState(false);
 
@@ -66,10 +66,11 @@ const CallToAction = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="bg-white text-brand-blue-500 hover:bg-opacity-90"
                 aria-label="Launch the app"
+                onClick={onNavigateToAuth}
               >
                 Launch the app
               </Button>
