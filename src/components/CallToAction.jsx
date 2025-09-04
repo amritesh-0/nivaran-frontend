@@ -3,12 +3,14 @@ import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Container from './common/Container';
 import Button from './common/Button';
+import { useNavigate } from 'react-router-dom';
 
 const Lottie = lazy(() => import('lottie-react'));
 
-const CallToAction = ({ onNavigateToAuth }) => {
+const CallToAction = () => {
   const [animationData, setAnimationData] = useState(null);
   const [animationError, setAnimationError] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     let isMounted = true;
@@ -70,7 +72,7 @@ const CallToAction = ({ onNavigateToAuth }) => {
                 size="lg"
                 className="bg-white text-brand-blue-500 hover:bg-opacity-90"
                 aria-label="Launch the app"
-                onClick={onNavigateToAuth}
+                onClick={() => navigate('/auth')}
               >
                 Launch the app
               </Button>

@@ -3,10 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Bars3Icon, XMarkIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 import Container from './common/Container';
 import Button from './common/Button';
+import { useNavigate } from 'react-router-dom';
 
-const Header = ({ onNavigateToAuth }) => {
+const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,6 +24,10 @@ const Header = ({ onNavigateToAuth }) => {
     { label: 'Privacy Policy', href: '#privacy-policy' },
     { label: 'Contact', href: '#contact' },
   ];
+
+  const handleNavigateToAuth = () => {
+    navigate('/auth');
+  };
 
   return (
     <motion.header
@@ -81,14 +87,14 @@ const Header = ({ onNavigateToAuth }) => {
               variant="outline"
               size="sm"
               aria-label="Admin Sign In"
-              onClick={onNavigateToAuth}
+              onClick={handleNavigateToAuth}
             >
               Admin Sign In
             </Button>
             <Button
               size="sm"
               aria-label="Report an Issue"
-              onClick={onNavigateToAuth}
+              onClick={handleNavigateToAuth}
             >
               Report an Issue
             </Button>
@@ -146,7 +152,7 @@ const Header = ({ onNavigateToAuth }) => {
                     size="sm"
                     className="w-full"
                     aria-label="Admin Sign In"
-                    onClick={onNavigateToAuth}
+                    onClick={handleNavigateToAuth}
                   >
                     Admin Sign In
                   </Button>
@@ -154,7 +160,7 @@ const Header = ({ onNavigateToAuth }) => {
                     size="sm"
                     className="w-full"
                     aria-label="Report an Issue"
-                    onClick={onNavigateToAuth}
+                    onClick={handleNavigateToAuth}
                   >
                     Report an Issue
                   </Button>

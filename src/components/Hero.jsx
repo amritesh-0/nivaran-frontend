@@ -3,6 +3,7 @@ import { motion, useAnimation } from 'framer-motion';
 import { PlayIcon, ChevronDoubleDownIcon } from '@heroicons/react/24/solid';
 import Container from './common/Container';
 import Button from './common/Button';
+import { useNavigate } from 'react-router-dom';
 
 const Lottie = lazy(() => import('lottie-react'));
 
@@ -12,12 +13,13 @@ const heroStats = [
   { label: 'Coverage', value: 'City-wide' },
 ];
 
-const Hero = ({ onNavigateToAuth }) => {
+const Hero = () => {
   const [animationData, setAnimationData] = useState(null);
   const [animationError, setAnimationError] = useState(false);
   const [cleanAnimationData, setCleanAnimationData] = useState(null);
   const [cleanAnimationError, setCleanAnimationError] = useState(false);
   const controls = useAnimation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     let isMounted = true;
@@ -182,7 +184,7 @@ const Hero = ({ onNavigateToAuth }) => {
                 size="lg"
                 aria-label="Start Reporting"
                 className="focus-visible:ring-4 focus-visible:ring-[#5B9DFF]"
-                onClick={onNavigateToAuth}
+                onClick={() => navigate('/auth')}
               >
                 Start Reporting
               </Button>
