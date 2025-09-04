@@ -3,8 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './styles/globals.css';
 
 // Lazy load pages for better performance
-const Home = lazy(() => import('./pages/Home'));
-const Auth = lazy(() => import('./pages/Auth'));
+const Home = lazy(() => import('./pages/Home.jsx'));
+const Auth = lazy(() => import('./pages/auth.jsx'));
 
 // Loading component
 const LoadingSpinner = () => (
