@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import LandingPage from "../pages/Landing/LandingPage";
 import UserLayout from "../layouts/UserLayout";
+import AdminLayout from "../layouts/AdminLayout";
 // import StaffLayout from "../layouts/StaffLayout";
 // import AdminLayout from "../layouts/AdminLayout";
 import PrivateRoute from "./PrivateRoute";
@@ -19,7 +20,9 @@ export default function AppRoutes() {
         </Route>
 
         {/* Protected Staff Routes */}
-        
+        <Route element={<RoleRoute allowedRoles={["admin"]} />}>
+          <Route path="/admin/*" element={<AdminLayout />} />
+        </Route>
       </Route>
     </Routes>
   );
