@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu } from 'lucide-react';
 
 import AdminSidebar from '../components/Admin/Sidebar';
-import AdminDashboard from '../pages/Admin/AdminDashboard';
-import IssueManagement from '../pages/Admin/IssueManagement';
-import IssueDetail from '../pages/Admin/IssueDetail';
 
 const pageVariants = {
   initial: {
@@ -91,11 +88,8 @@ const AdminLayout = () => {
             animate="in"
             exit="out"
           >
-            <Routes>
-              <Route path="dashboard" element={<AdminDashboard />} />
-              <Route path="issue-management" element={<IssueManagement />} />
-              <Route path="issue/:issueId" element={<IssueDetail />} />
-            </Routes>
+            {/* The Outlet renders the nested route content */}
+            <Outlet />
           </motion.div>
         </main>
       </div>

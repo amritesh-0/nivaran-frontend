@@ -1,71 +1,126 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { 
-  ArrowLeft,
-  Circle,
-  FileText,
-  User,
-  Clock,
-  CheckCircle,
-  AlertTriangle
+  ArrowLeft, User, CheckCircle, MapPin, Tag, ThumbsUp, Calendar, Info, Users, Image, MessageSquare, Clock, AlertCircle
 } from 'lucide-react';
+import { getStatusPill, getSeverityPill } from '../../utils/styleUtils';
 
-const sectionVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
-};
-
-// Mock data for issues and staff
-const allIssuesData = [
-    { id: 'ROAD-2024-001', title: 'Large Pothole on Oak St', description: 'There is a massive pothole in the middle of Oak St, near the cross-section with Elm St. It is causing traffic jams and is dangerous for two-wheelers. It has been there for over a week.', category: 'Road', status: 'pending', severity: 'high', assigned: 'Unassigned', date: '2024-01-15' },
-    { id: 'ELEC-2024-002', title: 'Streetlight out on Main Rd', description: 'The streetlight in front of house number 123 on Main Road has been off for three nights now, making the area very dark and unsafe.', category: 'Electricity', status: 'in-progress', severity: 'medium', assigned: 'Amit Sharma', date: '2024-01-16' },
-    { id: 'WATER-2024-003', title: 'Burst water pipe near market', description: 'A water pipe has burst near the central market, leading to a large amount of water being wasted and flooding the area. It needs urgent attention.', category: 'Water', status: 'resolved', severity: 'high', assigned: 'Priya Singh', date: '2024-01-17' },
-    { id: 'SANI-2024-004', title: 'Garbage not collected on time', description: 'The weekly garbage collection has been delayed for the past two weeks. The bins are overflowing and it is causing a foul smell in the neighborhood.', category: 'Sanitation', status: 'acknowledged', severity: 'low', assigned: 'Rajesh Kumar', date: '2024-01-18' },
-    { id: 'ROAD-2024-005', title: 'Blocked drain on Temple St', description: 'A drain on Temple Street is completely blocked, causing water to pool on the road during rain. This is a recurring issue in this area.', category: 'Road', status: 'assigned', severity: 'medium', assigned: 'Rohan Verma', date: '2024-01-19' },
-];
-
-const staffData = [
-  { id: 'staff1', name: 'Amit Sharma', department: 'Electricity' },
-  { id: 'staff2', name: 'Priya Singh', department: 'Water' },
-  { id: 'staff3', name: 'Rajesh Kumar', department: 'Sanitation' },
-  { id: 'staff4', name: 'Rohan Verma', department: 'Road' },
-];
-
-const getStatusColor = (status) => {
-  switch (status) {
-    case 'pending': return 'bg-orange-100 text-orange-800';
-    case 'acknowledged': return 'bg-blue-100 text-blue-800';
-    case 'assigned': return 'bg-purple-100 text-purple-800';
-    case 'in-progress': return 'bg-indigo-100 text-indigo-800';
-    case 'resolved': return 'bg-green-100 text-green-800';
-    default: return 'bg-gray-100 text-gray-800';
-  }
-};
-
-const getSeverityColor = (severity) => {
-    switch (severity) {
-      case 'low': return 'bg-green-500 text-white';
-      case 'medium': return 'bg-orange-500 text-white';
-      case 'high': return 'bg-red-500 text-white';
-      default: return 'bg-gray-500 text-white';
+// --- Mock Data ---
+// In a real app, this data would come from Firestore/backend
+const mockData = {
+  issues: [
+    {
+      id: 'ROAD-2024-001',
+      title: 'Large Pothole on Oak St',
+      description: 'There is a massive pothole in the middle of Oak St, near the cross-section with Elm St. It is causing traffic jams and is dangerous for two-wheelers. It has been there for over a week.',
+      category: 'Road',
+      status: 'pending',
+      severity: 'high',
+      assigned: 'Unassigned',
+      date: '2024-01-15',
+      reporter: 'Rohan Verma',
+      upvotes: 21,
+      image: 'https://placehold.co/800x600/b0bec5/ffffff?text=Pothole+Image',
+      location: 'Nadbai, Bharatpur',
+      timeline: [
+        { status: 'reported', date: '2024-01-15T10:00:00Z', description: 'Issue was reported by Rohan Verma.' }
+      ],
+      comments: [
+        { author: 'System', text: 'Issue has been created and is awaiting review.', date: '2024-01-15T10:00:00Z' }
+      ],
+      deadline: null
+    },
+    {
+      id: 'ELEC-2024-002',
+      title: 'Streetlight out on Main Rd',
+      description: 'The streetlight in front of house number 123 on Main Road has been off for three nights now, making the area very dark and unsafe.',
+      category: 'Electricity',
+      status: 'in-progress',
+      severity: 'medium',
+      assigned: 'Amit Sharma',
+      date: '2024-01-16',
+      reporter: 'Priya Singh',
+      upvotes: 12,
+      image: 'https://placehold.co/800x600/546e7a/ffffff?text=Broken+Streetlight',
+      location: 'Nadbai, Bharatpur',
+      timeline: [
+        { status: 'reported', date: '2024-01-16T11:30:00Z', description: 'Issue was reported by Priya Singh.' },
+        { status: 'acknowledged', date: '2024-01-16T12:00:00Z', description: 'Admin has acknowledged the issue.' },
+        { status: 'assigned', date: '2024-01-16T14:45:00Z', description: 'Assigned to Amit Sharma.' }
+      ],
+      comments: [
+        { author: 'System', text: 'Issue was reported.', date: '2024-01-16T11:30:00Z' },
+        { author: 'Admin', text: 'Acknowledged and assigned to a team.', date: '2024-01-16T14:45:00Z' },
+        { author: 'Amit Sharma', text: 'On my way to inspect the site.', date: '2024-01-16T15:30:00Z' }
+      ],
+      deadline: null
+    },
+    {
+      id: 'WATER-2024-003',
+      title: 'Burst water pipe near market',
+      description: 'A water pipe has burst near the central market, leading to a large amount of water being wasted and flooding the area. It needs urgent attention.',
+      category: 'Water',
+      status: 'resolved',
+      severity: 'high',
+      assigned: 'Priya Singh',
+      date: '2024-01-17',
+      reporter: 'Rajesh Kumar',
+      upvotes: 35,
+      image: 'https://placehold.co/800x600/78909c/ffffff?text=Water+Pipe+Burst',
+      location: 'Nadbai, Bharatpur',
+      timeline: [
+        { status: 'reported', date: '2024-01-17T08:00:00Z', description: 'Issue was reported.' },
+        { status: 'acknowledged', date: '2024-01-17T08:15:00Z', description: 'Admin acknowledged the issue.' },
+        { status: 'assigned', date: '2024-01-17T08:30:00Z', description: 'Assigned to Priya Singh.' },
+        { status: 'resolved', date: '2024-01-17T12:45:00Z', description: 'The water pipe has been repaired and the issue is resolved.' }
+      ],
+      comments: [
+        { author: 'System', text: 'Issue was reported.', date: '2024-01-17T08:00:00Z' },
+        { author: 'Admin', text: 'Team is on site, should be resolved soon.', date: '2024-01-17T09:30:00Z' },
+        { author: 'Priya Singh', text: 'Repair work is complete. Closing this ticket.', date: '2024-01-17T12:45:00Z' }
+      ],
+      deadline: null
     }
-  };
+  ],
+  staff: [
+    { id: 'staff1', name: 'Amit Sharma', department: 'Electricity' },
+    { id: 'staff2', name: 'Priya Singh', department: 'Water' },
+    { id: 'staff3', name: 'Rajesh Kumar', department: 'Sanitation' },
+    { id: 'staff4', name: 'Rohan Verma', department: 'Road' },
+  ]
+};
+
+const formatReadableDate = (isoString) => {
+  const date = new Date(isoString);
+  return date.toLocaleString();
+};
+
+const InfoCard = ({ icon: Icon, label, value, children }) => (
+  <div className="flex items-start">
+    <Icon className="w-5 h-5 text-gray-500 mt-1 mr-4 flex-shrink-0" />
+    <div>
+      <p className="font-semibold text-gray-900">{label}</p>
+      {value ? <p className="text-gray-700">{value}</p> : children}
+    </div>
+  </div>
+);
 
 const IssueDetail = () => {
   const { issueId } = useParams();
   const navigate = useNavigate();
-  const issue = allIssuesData.find(i => i.id === issueId);
+  const initialIssue = mockData.issues.find((i) => i.id === issueId);
 
+  const [currentIssue, setCurrentIssue] = useState(initialIssue);
   const [selectedStaff, setSelectedStaff] = useState('');
-  const [message, setMessage] = useState('');
-  const [showMessage, setShowMessage] = useState(false);
+  const [newComment, setNewComment] = useState('');
+  const [deadline, setDeadline] = useState(initialIssue?.deadline ? new Date(initialIssue.deadline).toISOString().slice(0, 10) : '');
 
-  if (!issue) {
+  if (!currentIssue) {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="bg-white rounded-xl p-8 shadow-lg text-center">
-          <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-900">Issue Not Found</h2>
           <p className="text-gray-600 mt-2">The issue you are looking for does not exist.</p>
           <button onClick={() => navigate(-1)} className="mt-6 px-4 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors">Go Back</button>
@@ -74,145 +129,245 @@ const IssueDetail = () => {
     );
   }
 
+  const handleAction = (status, assignedStaff = '') => {
+    const newTimelineEvent = {
+      status: status.replace('-', '_'), // To match the timeline naming convention
+      date: new Date().toISOString(),
+      description: assignedStaff ? `Assigned to ${assignedStaff}.` : `Status updated to ${status}.`
+    };
+
+    setCurrentIssue(prev => ({
+      ...prev,
+      status: status,
+      assigned: assignedStaff || prev.assigned,
+      timeline: [...prev.timeline, newTimelineEvent]
+    }));
+  };
+
   const handleAssign = () => {
-    // In a real app, this would update the issue in Firestore
-    console.log(`Assigning issue ${issue.id} to staff with ID: ${selectedStaff}`);
-    setMessage(`Issue successfully assigned to staff!`);
-    setShowMessage(true);
+    const staffMember = mockData.staff.find(s => s.id === selectedStaff);
+    if (!staffMember) return;
+    
+    handleAction('assigned', staffMember.name);
+  };
+
+  const handleAcknowledge = () => {
+    handleAction('acknowledged');
   };
 
   const handleResolve = () => {
-    // In a real app, this would update the issue status to 'resolved' in Firestore
-    console.log(`Resolving issue ${issue.id}`);
-    setMessage(`Issue successfully marked as resolved!`);
-    setShowMessage(true);
+    handleAction('resolved');
   };
 
-  const statusTimeline = [
-    { date: '2024-01-15', status: 'Pending', description: 'Issue reported by a user.' },
-    { date: '2024-01-16', status: 'Acknowledged', description: 'Admin acknowledged the issue.' },
-    { date: '2024-01-17', status: 'Assigned', description: `Assigned to ${issue.assigned}.` },
-  ];
+  const handleSetDeadline = () => {
+    if (!deadline) return;
+    setCurrentIssue(prev => ({ ...prev, deadline: new Date(deadline).toISOString() }));
+  };
 
-  if (issue.status === 'resolved') {
-      statusTimeline.push({
-          date: issue.date,
-          status: 'Resolved',
-          description: 'The issue was confirmed as resolved by the admin.'
-      });
-  }
+  const handlePostComment = () => {
+    if (!newComment.trim()) return;
+    const comment = {
+      author: 'Admin',
+      text: newComment,
+      date: new Date().toISOString()
+    };
+    setCurrentIssue(prev => ({
+      ...prev,
+      comments: [...prev.comments, comment]
+    }));
+    setNewComment('');
+  };
 
   return (
-    <motion.div variants={sectionVariants} initial="hidden" animate="visible" className="max-w-7xl mx-auto space-y-8">
-      <div className="flex items-center space-x-4 mb-6">
-        <button onClick={() => navigate(-1)} className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors">
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
+    <div className="space-y-8 font-sans">
+      {/* Header */}
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center text-gray-600 hover:text-gray-900 font-semibold transition-colors mb-4"
+        >
+          <ArrowLeft className="w-5 h-5 mr-2" />
+          Back to All Issues
         </button>
-        <h1 className="text-3xl font-bold text-gray-900">Issue Details</h1>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Issue Details */}
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-lg space-y-6">
-          <div className="flex justify-between items-center pb-4 border-b border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-900">{issue.title}</h2>
-            <span className={`px-3 py-1 text-sm font-semibold rounded-full ${getStatusColor(issue.status)}`}>
-              {issue.status.replace('-', ' ')}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-700">
-            <p><span className="font-semibold text-gray-900">Issue ID:</span> {issue.id}</p>
-            <p><span className="font-semibold text-gray-900">Category:</span> {issue.category}</p>
-            <p><span className="font-semibold text-gray-900">Reported On:</span> {issue.date}</p>
-            <div className="flex items-center space-x-2">
-                <p className="font-semibold text-gray-900">Severity:</p>
-                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getSeverityColor(issue.severity)}`}>
-                    {issue.severity}
-                </span>
-            </div>
-            <p><span className="font-semibold text-gray-900">Assigned To:</span> {issue.assigned}</p>
-          </div>
-
-          <div>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Description</h3>
-            <p className="text-gray-700">{issue.description}</p>
-          </div>
-          
-          {/* Action buttons */}
-          <div className="pt-4 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
-            {issue.status !== 'resolved' && (
-              <button
-                onClick={handleResolve}
-                className="px-6 py-3 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition-colors font-medium flex items-center justify-center space-x-2"
-              >
-                <CheckCircle className="w-5 h-5" />
-                <span>Mark as Resolved</span>
-              </button>
-            )}
-            <Link
-              to="/admin/issue-management"
-              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg shadow-sm hover:bg-gray-100 transition-colors font-medium flex items-center justify-center space-x-2"
-            >
-              <FileText className="w-5 h-5" />
-              <span>Back to Issues</span>
-            </Link>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <h1 className="text-3xl font-bold text-gray-900">{currentIssue.title}</h1>
+          <div className="mt-2 md:mt-0 flex items-center gap-x-2">
+            {getSeverityPill(currentIssue.severity)}
+            {getStatusPill(currentIssue.status)}
           </div>
         </div>
+      </motion.div>
 
-        {/* Sidebar: Assign Staff & Timeline */}
-        <div className="lg:col-span-1 space-y-8">
-          {/* Assign Staff Section */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg space-y-4">
-            <h3 className="text-lg font-bold text-gray-900 flex items-center space-x-2">
-              <User className="w-5 h-5 text-purple-600" />
-              <span>Assign Staff</span>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column: Issue Info, Image & Comments */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0, transition: { delay: 0.2 } }}
+          className="lg:col-span-2 space-y-8"
+        >
+          {/* Main Issue Details */}
+          <div className="bg-white rounded-3xl p-8 shadow-lg space-y-8">
+            <h3 className="text-2xl font-bold text-gray-900">Issue Overview</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-8">
+              <InfoCard icon={Info} label="Issue ID" value={currentIssue.id} />
+              <InfoCard icon={Calendar} label="Reported On" value={currentIssue.date} />
+              <InfoCard icon={Tag} label="Category" value={currentIssue.category} />
+              <InfoCard icon={User} label="Reported By" value={currentIssue.reporter} />
+              <InfoCard icon={MapPin} label="Location" value={currentIssue.location} />
+              <InfoCard icon={ThumbsUp} label="Upvotes" value={`${currentIssue.upvotes}`} />
+            </div>
+          </div>
+
+          {/* Image & Description */}
+          <div className="bg-white rounded-3xl p-8 shadow-lg space-y-6">
+            <h3 className="text-xl font-bold text-gray-900 flex items-center gap-x-2">
+              <Image className="w-6 h-6 text-gray-500" />
+              Evidence & Description
             </h3>
+            <img src={currentIssue.image} alt={currentIssue.title} className="w-full h-auto rounded-2xl object-cover shadow-md" />
+            <div>
+              <p className="text-gray-700 leading-relaxed">{currentIssue.description}</p>
+            </div>
+          </div>
+
+          {/* Comments Section */}
+          <div className="bg-white rounded-3xl p-8 shadow-lg space-y-6">
+            <h3 className="text-xl font-bold text-gray-900 flex items-center gap-x-2">
+              <MessageSquare className="w-6 h-6 text-gray-500" />
+              Comments
+            </h3>
+            <div className="space-y-4 max-h-80 overflow-y-auto pr-2">
+              {currentIssue.comments.map((comment, index) => (
+                <div key={index} className="p-4 rounded-xl bg-gray-100 border border-gray-200">
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-1">
+                    <span className="font-semibold text-gray-800">{comment.author}</span>
+                    <span>{formatReadableDate(comment.date)}</span>
+                  </div>
+                  <p className="text-gray-700">{comment.text}</p>
+                </div>
+              ))}
+            </div>
+            
+            {/* Comment Input */}
+            <div className="mt-4">
+              <textarea
+                className="w-full p-3 rounded-lg border-gray-300 border focus:ring-2 focus:ring-blue-500 transition resize-none"
+                rows="3"
+                placeholder="Add a new comment..."
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+              />
+              <button
+                onClick={handlePostComment}
+                disabled={!newComment.trim()}
+                className="mt-2 w-full py-2 px-4 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                Post Comment
+              </button>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Right Column: Actions & Timeline */}
+        <div className="lg:col-span-1 space-y-8">
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0, transition: { delay: 0.3 } }}
+            className="bg-white rounded-3xl p-8 shadow-lg space-y-6"
+          >
+            <h3 className="text-xl font-bold text-gray-900">Manage Issue</h3>
+            
             <div className="space-y-4">
-              <div className="relative">
+              {/* Assign Staff */}
+              <div className="space-y-2">
+                <label className="font-semibold text-gray-800 flex items-center"><Users className="w-5 h-5 mr-2" /> Assign Staff</label>
                 <select
                   value={selectedStaff}
                   onChange={(e) => setSelectedStaff(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors appearance-none"
+                  className="w-full px-4 py-3 rounded-xl border-gray-200 border bg-gray-50 appearance-none focus:ring-2 focus:ring-blue-500 transition"
+                  disabled={currentIssue.status === 'resolved'}
                 >
-                  <option value="" disabled>Select a staff member</option>
-                  {staffData.map(staff => (
-                    <option key={staff.id} value={staff.id}>{staff.name} ({staff.department})</option>
+                  <option value="" disabled>Select a staff member...</option>
+                  {mockData.staff.map((staff) => (
+                    <option key={staff.id} value={staff.id}>
+                      {staff.name}
+                    </option>
                   ))}
                 </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                  <span className="w-4 h-4">▼</span>
-                </div>
+                <button
+                  onClick={handleAssign}
+                  disabled={!selectedStaff || currentIssue.status === 'resolved' || currentIssue.status === 'assigned'}
+                  className="w-full py-3 px-4 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                  Assign Issue
+                </button>
               </div>
-              <button
-                onClick={handleAssign}
-                disabled={!selectedStaff}
-                className={`w-full px-4 py-3 text-white rounded-lg shadow-md transition-colors font-medium flex items-center justify-center space-x-2 ${
-                  selectedStaff ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-400 cursor-not-allowed'
-                }`}
-              >
-                <span>Assign Issue</span>
-              </button>
-            </div>
-          </div>
 
-          {/* Status Timeline */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg space-y-4">
-            <h3 className="text-lg font-bold text-gray-900 flex items-center space-x-2">
-              <Clock className="w-5 h-5 text-indigo-600" />
-              <span>Status Timeline</span>
+              {/* Acknowledge Issue */}
+              <div className="space-y-2">
+                 <button
+                  onClick={handleAcknowledge}
+                  disabled={currentIssue.status !== 'pending'}
+                  className="w-full py-3 px-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                  Acknowledge Issue
+                </button>
+              </div>
+
+              {/* Set Deadline */}
+              <div className="space-y-2">
+                <label className="font-semibold text-gray-800 flex items-center"><Calendar className="w-5 h-5 mr-2" /> Set Deadline</label>
+                <input
+                  type="date"
+                  value={deadline}
+                  onChange={(e) => setDeadline(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border-gray-200 border bg-gray-50 focus:ring-2 focus:ring-blue-500 transition"
+                  disabled={currentIssue.status === 'resolved'}
+                />
+                <button
+                  onClick={handleSetDeadline}
+                  disabled={!deadline || currentIssue.status === 'resolved'}
+                  className="w-full py-3 px-4 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                  Set Deadline
+                </button>
+                {currentIssue.deadline && (
+                  <p className="text-sm text-gray-600 mt-2">Current deadline: {new Date(currentIssue.deadline).toLocaleDateString()}</p>
+                )}
+              </div>
+
+              {/* Mark as Resolved */}
+              <div className="space-y-2">
+                 <button
+                  onClick={handleResolve}
+                  disabled={currentIssue.status === 'resolved'}
+                  className="w-full py-3 px-4 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                  Mark as Resolved
+                </button>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Progress Timeline */}
+          <div className="bg-white rounded-3xl p-8 shadow-lg space-y-6">
+            <h3 className="text-xl font-bold text-gray-900 flex items-center gap-x-2">
+              <Clock className="w-6 h-6 text-indigo-600" />
+              Progress Timeline
             </h3>
             <div className="relative pl-4">
-              {statusTimeline.map((item, index) => (
+              {currentIssue.timeline.map((item, index) => (
                 <div key={index} className="flex items-start mb-6 last:mb-0">
-                  <div className="absolute left-0 top-0 h-full w-px bg-gray-300" />
-                  <div className="absolute left-0 -translate-x-1/2 rounded-full p-1 bg-white border-2 border-indigo-500">
-                    <Circle className="w-2 h-2 fill-indigo-500 text-transparent" />
+                  {index < currentIssue.timeline.length - 1 && (
+                    <div className="absolute left-0 top-0 h-full w-px bg-gray-300 transform translate-x-1/2" />
+                  )}
+                  <div className="relative z-10 p-1 bg-white rounded-full">
+                    <div className="w-3 h-3 rounded-full bg-indigo-500" />
                   </div>
                   <div className="ml-4 flex-1">
-                    <p className="font-medium text-gray-900">{item.status}</p>
+                    <p className="font-medium text-gray-900 capitalize">{item.status.replace('_', ' ')}</p>
                     <p className="text-sm text-gray-600 mt-1">{item.description}</p>
-                    <p className="text-xs text-gray-400 mt-1">{item.date}</p>
+                    <p className="text-xs text-gray-400 mt-1">{formatReadableDate(item.date)}</p>
                   </div>
                 </div>
               ))}
@@ -220,30 +375,7 @@ const IssueDetail = () => {
           </div>
         </div>
       </div>
-
-      {/* Message Modal */}
-      {showMessage && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50"
-          onClick={() => setShowMessage(false)}
-        >
-          <div className="bg-white rounded-2xl p-6 shadow-xl text-center max-w-sm w-full space-y-4">
-            <CheckCircle className="w-12 h-12 text-green-500 mx-auto" />
-            <h3 className="text-xl font-bold text-gray-900">Success!</h3>
-            <p className="text-gray-600">{message}</p>
-            <button
-              onClick={() => setShowMessage(false)}
-              className="px-6 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors"
-            >
-              Close
-            </button>
-          </div>
-        </motion.div>
-      )}
-    </motion.div>
+    </div>
   );
 };
 

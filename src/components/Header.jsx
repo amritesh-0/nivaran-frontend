@@ -1,19 +1,19 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bars3Icon, XMarkIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 import Container from './common/Container';
 import Button from './common/Button';
+import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-    
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -25,27 +25,42 @@ const Header = () => {
     { label: 'Contact', href: '#contact' },
   ];
 
+  const handleNavigateToAuth = () => {
+    navigate('/auth');
+  };
+
   return (
-    <motion.header 
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'glass shadow-lg' : 'bg-transparent'}`}
+    <motion.header
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+        isScrolled ? 'glass shadow-lg' : 'bg-transparent'
+      }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
       aria-label="Header"
     >
       <Container>
-        <nav className="flex items-center justify-between h-16 md:h-20" aria-label="Main Navigation">
-          <motion.div 
+        <nav
+          className="flex items-center justify-between h-16 md:h-20"
+          aria-label="Main Navigation"
+        >
+          {/* LOGO */}
+          <motion.div
             className="flex items-center space-x-3"
             whileHover={{ scale: 1.05 }}
             transition={{ type: 'spring', stiffness: 400, damping: 25 }}
             aria-label="Logo"
           >
-            <ShieldCheckIcon className="h-8 w-8 text-brand-blue-500" aria-hidden="true" />
+            <ShieldCheckIcon
+              className="h-8 w-8 text-brand-blue-500"
+              aria-hidden="true"
+            />
             <span className="text-xl font-bold text-text-primary dark:text-white">
               Nivaran
             </span>
           </motion.div>
+
+          {/* DESKTOP NAV */}
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link, index) => (
               <motion.a
@@ -58,18 +73,34 @@ const Header = () => {
                 aria-label={link.label}
               >
                 {link.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-blue-500 transition-all duration-300 group-hover:w-full" aria-hidden="true" />
+                <span
+                  className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-blue-500 transition-all duration-300 group-hover:w-full"
+                  aria-hidden="true"
+                />
               </motion.a>
             ))}
           </div>
+
+          {/* DESKTOP BUTTONS */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="outline" size="sm" aria-label="Admin Sign In">
+            <Button
+              variant="outline"
+              size="sm"
+              aria-label="Admin Sign In"
+              onClick={handleNavigateToAuth}
+            >
               Admin Sign In
             </Button>
-            <Button size="sm" aria-label="Report an Issue">
+            <Button
+              size="sm"
+              aria-label="Report an Issue"
+              onClick={handleNavigateToAuth}
+            >
               Report an Issue
             </Button>
           </div>
+
+          {/* MOBILE TOGGLE */}
           <motion.button
             className="md:hidden p-2 text-text-primary dark:text-white"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -85,13 +116,15 @@ const Header = () => {
           </motion.button>
         </nav>
       </Container>
+
+      {/* MOBILE MENU */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            className="md:hidden glass border-t border-white border-opacity-20"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden fixed top-16 inset-x-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t border-white/20 p-6"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
             aria-label="Mobile Menu"
           >
@@ -111,11 +144,24 @@ const Header = () => {
                     {link.label}
                   </motion.a>
                 ))}
+
+                {/* MOBILE BUTTONS */}
                 <div className="pt-4 space-y-3">
-                  <Button variant="outline" size="sm" className="w-full" aria-label="Admin Sign In">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    aria-label="Admin Sign In"
+                    onClick={handleNavigateToAuth}
+                  >
                     Admin Sign In
                   </Button>
-                  <Button size="sm" className="w-full" aria-label="Report an Issue">
+                  <Button
+                    size="sm"
+                    className="w-full"
+                    aria-label="Report an Issue"
+                    onClick={handleNavigateToAuth}
+                  >
                     Report an Issue
                   </Button>
                 </div>

@@ -1,27 +1,89 @@
-import { Routes, Route } from "react-router-dom";
-import LandingPage from "../pages/Landing/LandingPage";
-import UserLayout from "../layouts/UserLayout";
-import AdminLayout from "../layouts/AdminLayout";
-// import StaffLayout from "../layouts/StaffLayout";
-// import AdminLayout from "../layouts/AdminLayout";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { lazy, useContext } from "react";
 import PrivateRoute from "./PrivateRoute";
 import RoleRoute from "./RoleRoute";
+import { AuthContext } from "../context/AuthContext";
+
+// Lazy load components
+const Home = lazy(() => import("../pages/Home"));
+const Auth = lazy(() => import("../pages/Auth"));
+const UserLayout = lazy(() => import("../layouts/UserLayout"));
+const AdminLayout = lazy(() => import("../layouts/AdminLayout"));
+const AdminDashboard = lazy(() => import("../pages/Admin/AdminDashboard"));
+const IssueManagement = lazy(() => import("../pages/Admin/IssueManagement"));
+const IssueDetail = lazy(() => import("../pages/Admin/IssueDetail"));
+const StaffManagement = lazy(() => import("../pages/Admin/StaffManagement"));
+const Analytics = lazy(() => import("../pages/Admin/Analytics"));
+const AdminProfile = lazy(() => import("../pages/Admin/AdminProfile"));
+
+// Lazy load User pages for nested routes
+const Dashboard = lazy(() => import("../pages/User/Dashboard"));
+const Profile = lazy(() => import("../pages/User/Profile"));
+const RaiseProblem = lazy(() => import("../pages/User/RaiseProblem"));
+const MyReports = lazy(() => import("../pages/User/MyReports"));
+const LocalIssues = lazy(() => import("../pages/User/LocalIssues"));
+const ReportDetail = lazy(() => import("../pages/User/ReportDetail"));
+const Departments = lazy(() => import("../pages/User/Departments"));
+
 
 export default function AppRoutes() {
+  const { isAuthenticated, role } = useContext(AuthContext);
+
   return (
     <Routes>
       {/* Public Routes */}
-      <Route path="/" element={<LandingPage />} />
+      <Route
+        path="/"
+        element={
+          isAuthenticated
+            ? (role === 'admin'
+              ? <Navigate to="/admin/dashboard" replace />
+              : <Navigate to="/user/dashboard" replace />
+            )
+            : <Home />
+        }
+      />
 
-      {/* Protected User Routes */}
+      <Route
+        path="/auth"
+        element={
+          isAuthenticated
+            ? (role === 'admin'
+              ? <Navigate to="/admin/dashboard" replace />
+              : <Navigate to="/user/dashboard" replace />
+            )
+            : <Auth />
+        }
+      />
+
+      {/* Protected Routes */}
       <Route element={<PrivateRoute />}>
+        {/* Protected User Routes */}
         <Route element={<RoleRoute allowedRoles={["user"]} />}>
-          <Route path="/user/*" element={<UserLayout />} />
+          <Route path="/user" element={<UserLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="raise-problem" element={<RaiseProblem />} />
+            <Route path="my-reports" element={<MyReports />} />
+            <Route path="local-issues" element={<LocalIssues />} />
+            <Route path="report/:id" element={<ReportDetail />} />
+            <Route path="departments" element={<Departments />} />
+          </Route>
         </Route>
 
-        {/* Protected Staff Routes */}
+        {/* Protected Admin Routes */}
         <Route element={<RoleRoute allowedRoles={["admin"]} />}>
-          <Route path="/admin/*" element={<AdminLayout />} />
+          {/* This is the corrected nested route structure */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="issue-management" element={<IssueManagement />} />
+            <Route path="issue/:issueId" element={<IssueDetail />} />
+            <Route path="staff" element={<StaffManagement />} />
+            <Route path="analytics" element={<Analytics />} />
+            <Route path="profile" element={<AdminProfile />} />
+          </Route>
         </Route>
       </Route>
     </Routes>

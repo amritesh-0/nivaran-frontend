@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import Header from '../components/Header';
@@ -8,7 +7,39 @@ import Features from '../components/Features';
 import CallToAction from '../components/CallToAction';
 import Footer from '../components/Footer';
 
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+
 const Home = () => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  // Function to simulate a standard user login
+  const handleSimulatedUserLogin = () => {
+    // This is a dummy user object. In a real app, this data would come from an API.
+    const mockUser = {
+      id: 1,
+      name: 'John Citizen',
+      role: 'user',
+      token: 'mock-token-123',
+    };
+    login(mockUser);
+    navigate('/user/dashboard'); // Redirect to the user dashboard after logging in
+  };
+
+  // Function to simulate an admin user login
+  const handleSimulatedAdminLogin = () => {
+    // A separate mock user object for the admin role
+    const mockAdmin = {
+      id: 2,
+      name: 'Jane Admin',
+      role: 'admin',
+      token: 'mock-token-admin-456',
+    };
+    login(mockAdmin);
+    navigate('/admin/dashboard'); // Redirect to the admin dashboard
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}

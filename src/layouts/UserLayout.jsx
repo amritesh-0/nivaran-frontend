@@ -1,17 +1,9 @@
 import React, { useState } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu } from 'lucide-react';
 
 import Sidebar from '../components/User/Sidebar';
-
-import Dashboard from '../pages/User/Dashboard';
-import Profile from '../pages/User/Profile';
-import RaiseProblem from '../pages/User/RaiseProblem';
-import MyReports from '../pages/User/MyReports';
-import LocalIssues from '../pages/User/LocalIssues';
-import ReportDetail from '../pages/User/ReportDetail';
-import Departments from '../pages/User/Departments';
 
 const pageVariants = {
   initial: {
@@ -96,15 +88,8 @@ const UserLayout = () => {
             animate="in"
             exit="out"
           >
-            <Routes>
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="raise-problem" element={<RaiseProblem />} />
-              <Route path="my-reports" element={<MyReports />} />
-              <Route path="local-issues" element={<LocalIssues />} />
-              <Route path="report/:id" element={<ReportDetail />} />
-              <Route path="departments" element={<Departments />} />
-            </Routes>
+            {/* The Outlet renders the nested route content */}
+            <Outlet />
           </motion.div>
         </main>
       </div>
