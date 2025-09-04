@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import HowItWorks from '../components/HowItWorks';
@@ -9,6 +10,12 @@ import CallToAction from '../components/CallToAction';
 import Footer from '../components/Footer';
 
 const Home = () => {
+  const navigate = useNavigate();
+
+  const handleNavigateToAuth = () => {
+    navigate('/auth');
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -17,12 +24,12 @@ const Home = () => {
       className="min-h-screen bg-bg-DEFAULT dark:bg-gray-900"
       aria-label="Home Page"
     >
-      <Header />
+      <Header onNavigateToAuth={handleNavigateToAuth} />
       <main aria-label="Main Content">
-        <Hero />
+        <Hero onNavigateToAuth={handleNavigateToAuth} />
         <HowItWorks />
         <Features />
-        <CallToAction />
+        <CallToAction onNavigateToAuth={handleNavigateToAuth} />
       </main>
       <Footer />
     </motion.div>
