@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { EyeIcon, EyeSlashIcon, UserIcon, EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import Button from './common/Button';
+import authApi from '../services/authApi';
+import { useAuth } from '../context/AuthContext';
 
 const AuthForm = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -12,8 +17,10 @@ const AuthForm = () => {
     email: '',
     password: '',
     confirmPassword: '',
+    rememberMe: true,
   });
   const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -22,51 +29,97 @@ const AuthForm = () => {
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
+    // Clear form error when user starts typing
+    if (errors.form) {
+      setErrors(prev => ({ ...prev, form: '' }));
+    }
+    // Clear success message when user starts typing
+    if (successMessage) {
+      setSuccessMessage('');
+    }
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!isLogin && !formData.name.trim()) {
       newErrors.name = 'Name is required';
     }
-    
+
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email';
     }
-    
+
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
-    
+
     if (!isLogin && formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log(isLogin ? 'Login' : 'Sign up', formData);
-      // Handle authentication logic here
+      try {
+        if (isLogin) {
+          const data = await authApi.login({
+            email: formData.email,
+            password: formData.password,
+            rememberMe: formData.rememberMe,
+          });
+          console.log('Login successful:', data);
+          setSuccessMessage('Login successful! Welcome back.');
+          login(data.user, formData.rememberMe);
+          // Redirect to user dashboard
+          setTimeout(() => {
+            navigate('/user/dashboard');
+          }, 1500);
+        } else {
+          const data = await authApi.register({
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+          });
+          console.log('Registration successful:', data);
+          setSuccessMessage('Registration successful! Please log in to continue.');
+          // Switch to login mode
+          setTimeout(() => {
+            setIsLogin(true);
+            setSuccessMessage('');
+          }, 2000);
+        }
+      } catch (error) {
+        console.error('Authentication error:', error);
+        setSuccessMessage('');
+        // Show error message to user in engaging way
+        if (error.message) {
+          setErrors(prev => ({ ...prev, form: error.message }));
+        } else {
+          setErrors(prev => ({ ...prev, form: 'An unexpected error occurred' }));
+        }
+      }
     }
   };
 
   const toggleAuthMode = () => {
     setIsLogin(!isLogin);
     setErrors({});
+    setSuccessMessage('');
     setFormData({
       name: '',
       email: '',
       password: '',
       confirmPassword: '',
+      rememberMe: true,
     });
   };
 
@@ -119,7 +172,7 @@ const AuthForm = () => {
               <label htmlFor="name" className="block text-sm font-medium text-text-primary dark:text-white mb-2">
                 Full Name
               </label>
-              <motion.div 
+              <motion.div
                 className="relative"
                 variants={inputVariants}
                 whileFocus="focus"
@@ -139,7 +192,7 @@ const AuthForm = () => {
                 />
               </motion.div>
               {errors.name && (
-                <motion.p 
+                <motion.p
                   className="text-red-500 text-sm mt-1"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -157,7 +210,7 @@ const AuthForm = () => {
           <label htmlFor="email" className="block text-sm font-medium text-text-primary dark:text-white mb-2">
             Email Address
           </label>
-          <motion.div 
+          <motion.div
             className="relative"
             variants={inputVariants}
             whileFocus="focus"
@@ -177,7 +230,7 @@ const AuthForm = () => {
             />
           </motion.div>
           {errors.email && (
-            <motion.p 
+            <motion.p
               className="text-red-500 text-sm mt-1"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -193,7 +246,7 @@ const AuthForm = () => {
           <label htmlFor="password" className="block text-sm font-medium text-text-primary dark:text-white mb-2">
             Password
           </label>
-          <motion.div 
+          <motion.div
             className="relative"
             variants={inputVariants}
             whileFocus="focus"
@@ -224,7 +277,7 @@ const AuthForm = () => {
             </button>
           </motion.div>
           {errors.password && (
-            <motion.p 
+            <motion.p
               className="text-red-500 text-sm mt-1"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -247,7 +300,7 @@ const AuthForm = () => {
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-text-primary dark:text-white mb-2">
                 Confirm Password
               </label>
-              <motion.div 
+              <motion.div
                 className="relative"
                 variants={inputVariants}
                 whileFocus="focus"
@@ -278,7 +331,7 @@ const AuthForm = () => {
                 </button>
               </motion.div>
               {errors.confirmPassword && (
-                <motion.p 
+                <motion.p
                   className="text-red-500 text-sm mt-1"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -293,7 +346,7 @@ const AuthForm = () => {
 
         {/* Remember Me / Forgot Password */}
         {isLogin && (
-          <motion.div 
+          <motion.div
             className="flex items-center justify-between"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -302,12 +355,14 @@ const AuthForm = () => {
             <label className="flex items-center">
               <input
                 type="checkbox"
+                checked={formData.rememberMe}
+                onChange={(e) => setFormData(prev => ({ ...prev, rememberMe: e.target.checked }))}
                 className="rounded border-gray-300 text-brand-blue-500 focus:ring-brand-blue-500 focus:ring-offset-0"
               />
               <span className="ml-2 text-sm text-text-muted">Remember me</span>
             </label>
-            <a 
-              href="#" 
+            <a
+              href="#"
               className="text-sm text-brand-blue-500 hover:text-brand-blue-400 transition-colors duration-200"
             >
               Forgot password?
@@ -321,17 +376,45 @@ const AuthForm = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.8 }}
         >
-          <Button 
-            type="submit" 
-            size="md" 
+          <Button
+            type="submit"
+            size="md"
             className="w-full"
           >
             {isLogin ? 'Sign In' : 'Create Account'}
           </Button>
         </motion.div>
 
+        {/* Success Message */}
+        {successMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg"
+          >
+            <p className="text-green-600 dark:text-green-400 text-sm text-center">
+              {successMessage}
+            </p>
+          </motion.div>
+        )}
+
+        {/* Form Error Message */}
+        {errors.form && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg"
+          >
+            <p className="text-red-600 dark:text-red-400 text-sm text-center">
+              {errors.form}
+            </p>
+          </motion.div>
+        )}
+
         {/* Divider */}
-        <motion.div 
+        <motion.div
           className="relative"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -348,14 +431,14 @@ const AuthForm = () => {
         </motion.div>
 
         {/* Social Login */}
-        <motion.div 
+        <motion.div
           className="grid grid-cols-2 gap-3"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 1.2 }}
         >
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="flex items-center justify-center space-x-2"
             onClick={() => console.log('Google login')}
           >
@@ -367,8 +450,8 @@ const AuthForm = () => {
             </svg>
             <span>Google</span>
           </Button>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="flex items-center justify-center space-x-2"
             onClick={() => console.log('GitHub login')}
           >
@@ -380,7 +463,7 @@ const AuthForm = () => {
         </motion.div>
 
         {/* Toggle Auth Mode */}
-        <motion.div 
+        <motion.div
           className="text-center pt-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

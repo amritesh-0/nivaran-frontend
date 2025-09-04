@@ -1,8 +1,10 @@
 import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ShieldCheckIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { Navigate } from 'react-router-dom';
 import Container from '../components/common/Container';
 import AuthForm from '../components/AuthForm';
+import { useAuth } from '../context/AuthContext';
 
 const Lottie = lazy(() => import('lottie-react'));
 

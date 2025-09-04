@@ -1,10 +1,8 @@
-import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { Suspense } from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import AppRoutes from './routes/AppRoutes';
 import './styles/globals.css';
-
-// Lazy load pages for better performance
-const Home = lazy(() => import('./pages/Home.jsx'));
-const Auth = lazy(() => import('./pages/auth.jsx'));
 
 // Loading component
 const LoadingSpinner = () => (
@@ -16,14 +14,11 @@ const LoadingSpinner = () => (
 function App() {
   return (
     <Router>
-      <Suspense fallback={<LoadingSpinner />}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/auth" element={<Auth />} />
-          {/* Catch all route for 404 */}
-          <Route path="*" element={<Home />} />
-        </Routes>
-      </Suspense>
+      <AuthProvider>
+        <Suspense fallback={<LoadingSpinner />}>
+          <AppRoutes />
+        </Suspense>
+      </AuthProvider>
     </Router>
   );
 }
