@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ShieldCheckIcon, SunIcon, MoonIcon } from '@heroicons/react/24/outline';
 import { ChevronDownIcon } from '@heroicons/react/24/solid';
 import Container from './common/Container';
 import Button from './common/Button';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   const [isDark, setIsDark] = useState(false);
@@ -26,7 +26,7 @@ const Footer = () => {
     },
     {
       title: 'Company',
-      links: ['About', 'Careers', 'Contact', 'Press'],
+      links: ['About', 'Careers', 'Contact', 'Privacy Policy'],
     },
   ];
 
@@ -124,24 +124,41 @@ const Footer = () => {
                 {section.title}
               </h4>
               <ul className="space-y-3">
-                {section.links.map((link, linkIndex) => (
-                  <motion.li 
-                    key={link}
-                    initial={{ opacity: 0, x: -10 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: 0.1 * sectionIndex + 0.1 * linkIndex }}
-                  >
-                    <a 
-                      href="#"
-                      className="text-text-muted hover:text-brand-blue-500 transition-colors duration-200 relative group"
-                      aria-label={link}
+                {section.links.map((link, linkIndex) => {
+                  const isContact = link === 'Contact';
+                  const isPrivacy = link === 'Privacy Policy';
+                  const href = isContact ? '/contact' : isPrivacy ? '/privacy-policy' : '#';
+
+                  return (
+                    <motion.li
+                      key={link}
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: 0.1 * sectionIndex + 0.1 * linkIndex }}
                     >
-                      {link}
-                      <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-brand-blue-500 transition-all duration-300 group-hover:w-full" aria-hidden="true" />
-                    </a>
-                  </motion.li>
-                ))}
+                      {isContact || isPrivacy ? (
+                        <Link
+                          to={href}
+                          className="text-text-muted hover:text-brand-blue-500 transition-colors duration-200 relative group"
+                          aria-label={link}
+                        >
+                          {link}
+                          <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-brand-blue-500 transition-all duration-300 group-hover:w-full" aria-hidden="true" />
+                        </Link>
+                      ) : (
+                        <a
+                          href={href}
+                          className="text-text-muted hover:text-brand-blue-500 transition-colors duration-200 relative group"
+                          aria-label={link}
+                        >
+                          {link}
+                          <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-brand-blue-500 transition-all duration-300 group-hover:w-full" aria-hidden="true" />
+                        </a>
+                      )}
+                    </motion.li>
+                  );
+                })}
               </ul>
             </motion.div>
           ))}

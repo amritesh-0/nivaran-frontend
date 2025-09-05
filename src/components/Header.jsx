@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Bars3Icon, XMarkIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 import Container from './common/Container';
 import Button from './common/Button';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -21,8 +21,8 @@ const Header = () => {
   const navLinks = [
     { label: 'How it works', href: '#how-it-works' },
     { label: 'Features', href: '#features' },
-    { label: 'Privacy Policy', href: '#privacy-policy' },
-    { label: 'Contact', href: '#contact' },
+    { label: 'Privacy Policy', href: '/privacy-policy' },
+    { label: 'Contact', href: '/contact' },
   ];
 
   const handleNavigateToAuth = () => {
@@ -62,23 +62,46 @@ const Header = () => {
 
           {/* DESKTOP NAV */}
           <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link, index) => (
-              <motion.a
-                key={link.label}
-                href={link.href}
-                className="text-text-primary dark:text-white hover:text-brand-blue-500 transition-colors duration-200 relative group"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
-                aria-label={link.label}
-              >
-                {link.label}
-                <span
-                  className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-blue-500 transition-all duration-300 group-hover:w-full"
-                  aria-hidden="true"
-                />
-              </motion.a>
-            ))}
+            {navLinks.map((link, index) => {
+              const isContact = link.label === 'Contact';
+              const isPrivacy = link.label === 'Privacy Policy';
+              const isExternalLink = link.href.startsWith('#');
+
+              return (
+                <motion.div
+                  key={link.label}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                >
+                  {isExternalLink ? (
+                    <a
+                      href={link.href}
+                      className="text-text-primary dark:text-white hover:text-brand-blue-500 transition-colors duration-200 relative group"
+                      aria-label={link.label}
+                    >
+                      {link.label}
+                      <span
+                        className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-blue-500 transition-all duration-300 group-hover:w-full"
+                        aria-hidden="true"
+                      />
+                    </a>
+                  ) : (
+                    <Link
+                      to={link.href}
+                      className="text-text-primary dark:text-white hover:text-brand-blue-500 transition-colors duration-200 relative group"
+                      aria-label={link.label}
+                    >
+                      {link.label}
+                      <span
+                        className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-blue-500 transition-all duration-300 group-hover:w-full"
+                        aria-hidden="true"
+                      />
+                    </Link>
+                  )}
+                </motion.div>
+              );
+            })}
           </div>
 
           {/* DESKTOP BUTTONS */}
@@ -130,20 +153,40 @@ const Header = () => {
           >
             <Container>
               <div className="py-6 space-y-4">
-                {navLinks.map((link, index) => (
-                  <motion.a
-                    key={link.label}
-                    href={link.href}
-                    className="block text-text-primary dark:text-white hover:text-brand-blue-500 transition-colors duration-200 py-2"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    aria-label={link.label}
-                  >
-                    {link.label}
-                  </motion.a>
-                ))}
+                {navLinks.map((link, index) => {
+                  const isContact = link.label === 'Contact';
+                  const isPrivacy = link.label === 'Privacy Policy';
+                  const isExternalLink = link.href.startsWith('#');
+
+                  return (
+                    <motion.div
+                      key={link.label}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                    >
+                      {isExternalLink ? (
+                        <a
+                          href={link.href}
+                          className="block text-text-primary dark:text-white hover:text-brand-blue-500 transition-colors duration-200 py-2"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          aria-label={link.label}
+                        >
+                          {link.label}
+                        </a>
+                      ) : (
+                        <Link
+                          to={link.href}
+                          className="block text-text-primary dark:text-white hover:text-brand-blue-500 transition-colors duration-200 py-2"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          aria-label={link.label}
+                        >
+                          {link.label}
+                        </Link>
+                      )}
+                    </motion.div>
+                  );
+                })}
 
                 {/* MOBILE BUTTONS */}
                 <div className="pt-4 space-y-3">

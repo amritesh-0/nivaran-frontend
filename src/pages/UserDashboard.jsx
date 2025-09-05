@@ -13,7 +13,7 @@ function UserDashboard() {
     <Router>
       <Layout>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/raise-problem" element={<RaiseProblem />} />
           <Route path="/my-reports" element={<MyReports />} />
           <Route path="/local-issues" element={<LocalIssues />} />

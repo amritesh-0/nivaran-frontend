@@ -7,6 +7,9 @@ import { AuthContext } from "../context/AuthContext";
 // Lazy load components
 const Home = lazy(() => import("../pages/Home"));
 const Auth = lazy(() => import("../pages/Auth"));
+const Contact = lazy(() => import("../pages/Contact"));
+const PrivacyPolicy = lazy(() => import("../pages/Privacy"));
+
 const UserLayout = lazy(() => import("../layouts/UserLayout"));
 const AdminLayout = lazy(() => import("../layouts/AdminLayout"));
 const AdminDashboard = lazy(() => import("../pages/Admin/AdminDashboard"));
