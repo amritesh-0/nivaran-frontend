@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import AppRoutes from './routes/AppRoutes';
+import Chatbot from './components/common/Chatbot';
 import './styles/globals.css';
 
 // Loading component
@@ -17,6 +18,7 @@ function App() {
       <AuthProvider>
         <Suspense fallback={<LoadingSpinner />}>
           <AppRoutes />
+          <Chatbot />
         </Suspense>
       </AuthProvider>
     </Router>

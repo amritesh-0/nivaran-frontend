@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu } from 'lucide-react';
 
 import Sidebar from '../components/User/Sidebar';
+import Chatbot from '../components/common/Chatbot';
 
 import Dashboard from '../pages/User/Dashboard';
 import RaiseProblem from '../pages/User/RaiseProblem';
@@ -106,6 +107,9 @@ const UserLayout = () => {
           </motion.div>
         </main>
       </div>
+
+      {/* Chatbot */}
+      <Chatbot />
     </div>
   );
 };
