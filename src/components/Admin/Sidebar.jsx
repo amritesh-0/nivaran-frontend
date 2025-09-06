@@ -2,6 +2,8 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, ListTodo, Users, BarChart3, LogOut, X, User } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { ShieldCheckIcon } from '@heroicons/react/24/outline';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const navItems = [
   { path: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -38,10 +40,20 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
 
         {/* Logo */}
         <div className="hidden md:flex items-center space-x-3 mb-8">
-          <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-            <span className="text-white font-bold text-lg">N</span>
-          </div>
-          <span className="text-2xl font-bold text-gray-900">Nivaran Admin</span>
+          <motion.div
+            className="flex items-center space-x-3"
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            aria-label="Logo"
+          >
+            <ShieldCheckIcon
+              className="h-10 w-10 text-brand-blue-500"
+              aria-hidden="true"
+            />
+            <span className="text-2xl font-bold text-text-primary dark:text-white">
+              Nivaran
+            </span>
+          </motion.div>
         </div>
 
         {/* Navigation */}

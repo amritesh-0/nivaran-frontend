@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu } from 'lucide-react';
+import { ShieldCheckIcon } from '@heroicons/react/24/outline';
 
 import AdminSidebar from '../components/Admin/Sidebar';
 
@@ -43,7 +44,14 @@ const AdminLayout = () => {
       <div className="flex-1 flex flex-col md:ml-64 overflow-y-auto">
         {/* Mobile Header with Branding and Hamburger */}
         <div className="md:hidden flex items-center justify-between p-4 bg-white shadow-sm sticky top-0 z-30">
-          <span className="text-xl font-bold text-gray-900">Nivaran Admin</span>
+          <span className='flex gap-2'> 
+            <ShieldCheckIcon
+              className="h-8 w-8 text-brand-blue-500"
+              aria-hidden="true"
+            />
+            <span className="text-2xl font-bold text-text-primary dark:text-white">
+              Nivaran
+            </span> </span>
           <button onClick={() => setIsSidebarOpen(true)} className="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
             <Menu className="w-6 h-6 text-gray-700" />
           </button>

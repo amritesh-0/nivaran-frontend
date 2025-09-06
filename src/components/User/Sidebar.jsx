@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Home, FileText, MapPin, Building2, LogOut, MessageCircle, X, User } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { motion } from 'framer-motion';
+import { ShieldCheckIcon } from '@heroicons/react/24/outline';
 
 const navItems = [
   { path: '/user/dashboard', label: 'Dashboard', icon: Home },
@@ -39,10 +40,20 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
 
         {/* Logo */}
         <div className="hidden md:flex items-center space-x-3 mb-8">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-lg">N</span>
-            </div>
-            <span className="text-2xl font-bold text-gray-900">Nivaran</span>
+            <motion.div
+            className="flex items-center space-x-3"
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            aria-label="Logo"
+          >
+            <ShieldCheckIcon
+              className="h-8 w-8 text-brand-blue-500"
+              aria-hidden="true"
+            />
+            <span className="text-xl font-bold text-text-primary dark:text-white">
+              Nivaran
+            </span>
+          </motion.div>
         </div>
         
         {/* Navigation */}
