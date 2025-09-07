@@ -26,8 +26,8 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   };
 
   return (
-    <aside className="h-full overflow-y-auto p-6 flex flex-col justify-between transition-all duration-300 transform">
-      <div className="space-y-6">
+    <aside className="h-full overflow-y-auto p-6 flex flex-col justify-between transition-all duration-300 transform bg-white shadow-lg border-r">
+      <div className="space-y-6 ">
         {/* Mobile close button */}
         <div className="flex items-center justify-between md:hidden">
           <button

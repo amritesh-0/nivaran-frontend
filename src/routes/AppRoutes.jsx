@@ -12,12 +12,19 @@ const PrivacyPolicy = lazy(() => import("../pages/Privacy"));
 
 const UserLayout = lazy(() => import("../layouts/UserLayout"));
 const AdminLayout = lazy(() => import("../layouts/AdminLayout"));
+const StaffLayout = lazy(() => import("../layouts/StaffLayout"));
+
 const AdminDashboard = lazy(() => import("../pages/Admin/AdminDashboard"));
 const IssueManagement = lazy(() => import("../pages/Admin/IssueManagement"));
 const IssueDetail = lazy(() => import("../pages/Admin/IssueDetail"));
 const StaffManagement = lazy(() => import("../pages/Admin/StaffManagement"));
 const Analytics = lazy(() => import("../pages/Admin/Analytics"));
 const AdminProfile = lazy(() => import("../pages/Admin/AdminProfile"));
+
+const StaffDashboard = lazy(() => import("../pages/Staff/StaffDashboard"));
+const StaffIssueManagement = lazy(() => import("../pages/Staff/StaffIssueManagement"));
+const StaffIssueDetail = lazy(() => import("../pages/Staff/StaffIssueDetail"));
+const StaffProfile = lazy(() => import("../pages/Staff/StaffProfile"));
 
 // Lazy load User pages for nested routes
 const Dashboard = lazy(() => import("../pages/User/Dashboard"));
@@ -27,6 +34,7 @@ const MyReports = lazy(() => import("../pages/User/MyReports"));
 const LocalIssues = lazy(() => import("../pages/User/LocalIssues"));
 const ReportDetail = lazy(() => import("../pages/User/ReportDetail"));
 const Departments = lazy(() => import("../pages/User/Departments"));
+const CommunityFeed = lazy(() => import("../pages/User/CommunityFeed"));
 
 
 export default function AppRoutes() {
@@ -41,6 +49,8 @@ export default function AppRoutes() {
           isAuthenticated
             ? (role === 'admin'
               ? <Navigate to="/admin/dashboard" replace />
+              : role === 'staff'
+              ? <Navigate to="/staff/dashboard" replace />
               : <Navigate to="/user/dashboard" replace />
             )
             : <Home />
@@ -53,19 +63,23 @@ export default function AppRoutes() {
           isAuthenticated
             ? (role === 'admin'
               ? <Navigate to="/admin/dashboard" replace />
+              : role === 'staff'
+              ? <Navigate to="/staff/dashboard" replace />
               : <Navigate to="/user/dashboard" replace />
             )
             : <Auth />
         }
       />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
       {/* Protected Routes */}
       <Route element={<PrivateRoute />}>
         {/* Protected User Routes */}
         <Route element={<RoleRoute allowedRoles={["user"]} />}>
           <Route path="/user" element={<UserLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="dashboard" element={<Dashboard />} />
+            <Route index element={<CommunityFeed />} />
+            <Route path="dashboard" element={<CommunityFeed />} />
             <Route path="profile" element={<Profile />} />
             <Route path="raise-problem" element={<RaiseProblem />} />
             <Route path="my-reports" element={<MyReports />} />
@@ -77,7 +91,6 @@ export default function AppRoutes() {
 
         {/* Protected Admin Routes */}
         <Route element={<RoleRoute allowedRoles={["admin"]} />}>
-          {/* This is the corrected nested route structure */}
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="dashboard" element={<AdminDashboard />} />
@@ -86,6 +99,17 @@ export default function AppRoutes() {
             <Route path="staff" element={<StaffManagement />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="profile" element={<AdminProfile />} />
+          </Route>
+        </Route>
+
+        {/* Protected Staff Routes */}
+        <Route element={<RoleRoute allowedRoles={["staff"]} />}>
+          <Route path="/staff" element={<StaffLayout />}>
+            <Route index element={<StaffDashboard />} />
+            <Route path="dashboard" element={<StaffDashboard />} />
+            <Route path="issues" element={<StaffIssueManagement />} />
+            <Route path="issues/:issueId" element={<StaffIssueDetail />} />
+            <Route path="profile" element={<StaffProfile />} />
           </Route>
         </Route>
       </Route>

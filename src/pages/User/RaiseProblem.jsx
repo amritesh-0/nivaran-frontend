@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, MapPin, CheckCircle, X, Loader } from 'lucide-react';
+import { Camera, MapPin, CheckCircle, X } from 'lucide-react';
 
 const RaiseProblem = () => {
   const [step, setStep] = useState(1);
@@ -13,6 +13,7 @@ const RaiseProblem = () => {
     description: '',
     ticketId: null
   });
+
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -61,6 +62,17 @@ const RaiseProblem = () => {
     
     video.srcObject.getTracks().forEach(track => track.stop());
     setIsCameraOpen(false);
+  };
+  
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, image: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const getCurrentLocation = () => {
@@ -130,47 +142,67 @@ const RaiseProblem = () => {
             {/* Photo Capture Section */}
             <div>
               <label className="block text-lg font-semibold text-gray-900 mb-4">
-                Capture Problem Photo <span className="text-red-500">*</span>
+                Upload Problem Photo <span className="text-red-500">*</span>
               </label>
-              <div className="border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center hover:border-gray-300 transition-colors duration-200">
+              <div className="border-2 border-dashed border-gray-200 rounded-2xl p-6 md:p-8 text-center hover:border-gray-300 transition-colors duration-200">
                 {!formData.image ? (
-                  !isCameraOpen ? (
-                    <div>
-                      <Camera className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600 mb-4">Capture a photo of the problem</p>
-                      <motion.button
-                        type="button"
-                        onClick={startCamera}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="bg-gray-900 text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300"
-                      >
-                        Open Camera
-                      </motion.button>
-                    </div>
-                  ) : (
-                    <div>
-                      <video
-                        ref={videoRef}
-                        autoPlay
-                        className="w-full max-w-md mx-auto rounded-xl mb-4"
-                      />
-                      <motion.button
-                        type="button"
-                        onClick={capturePhoto}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="bg-gray-900 text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300"
-                      >
-                        Capture Photo
-                      </motion.button>
-                    </div>
-                  )
+                  <div>
+                    {/* This section provides the options for taking a live photo or uploading one. 
+                      You can uncomment the camera code below to enable that functionality again.
+                    */}
+                    {!isCameraOpen ? (
+                      <div>
+                        <Camera className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                        <p className="text-gray-600 mb-4">Capture a photo of the problem</p>
+                        <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                          <motion.button
+                            type="button"
+                            onClick={startCamera}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="bg-gray-900 text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300"
+                          >
+                            Open Camera
+                          </motion.button>
+                          <label 
+                            htmlFor="image-upload" 
+                            className="bg-gray-200 text-gray-800 px-6 py-3 rounded-xl font-semibold hover:bg-gray-300 transition-all duration-300 cursor-pointer inline-block"
+                          >
+                            Upload from Gallery
+                          </label>
+                        </div>
+                        <input
+                          id="image-upload"
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleImageUpload}
+                        />
+                      </div>
+                    ) : (
+                      <div>
+                        <video
+                          ref={videoRef}
+                          autoPlay
+                          className="w-full max-w-md mx-auto rounded-xl mb-4"
+                        />
+                        <motion.button
+                          type="button"
+                          onClick={capturePhoto}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="bg-gray-900 text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300"
+                        >
+                          Capture Photo
+                        </motion.button>
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <div className="relative">
                     <img
                       src={formData.image}
-                      alt="Captured problem"
+                      alt="Uploaded problem"
                       className="w-full max-w-md mx-auto rounded-xl"
                     />
                     <button
@@ -192,7 +224,7 @@ const RaiseProblem = () => {
                 Location Details <span className="text-red-500">*</span>
               </label>
               <div className="space-y-4">
-                <div className="flex space-x-4">
+                <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                   <input
                     type="text"
                     value={formData.location}
@@ -207,7 +239,7 @@ const RaiseProblem = () => {
                     onClick={getCurrentLocation}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="px-6 py-3 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300 flex items-center space-x-2"
+                    className="px-6 py-3 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300 flex items-center justify-center space-x-2"
                   >
                     <MapPin className="w-5 h-5" />
                     <span>Get Location</span>
@@ -277,7 +309,7 @@ const RaiseProblem = () => {
               <label className="block text-lg font-semibold text-gray-900 mb-4">
                 Criticality Level <span className="text-red-500">*</span>
               </label>
-              <div className="flex space-x-4">
+              <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                 {['low', 'medium', 'high'].map((level) => (
                   <motion.button
                     key={level}
@@ -386,15 +418,15 @@ const RaiseProblem = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="max-w-3xl mx-auto"
+      className="p-4 sm:p-8"
     >
       <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
-        <div className="bg-blue-50/50 p-6">
+        <div className="bg-blue-50/50 p-6 md:p-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Raise a Problem</h1>
           <p className="text-gray-600">Help improve your community by reporting issues</p>
         </div>
 
-        <div className="p-8">
+        <div className="p-4 md:p-8">
           <AnimatePresence mode="wait">
             {renderContent()}
           </AnimatePresence>

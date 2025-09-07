@@ -1,61 +1,67 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, FileText, MapPin, Building2, LogOut, MessageCircle, X, User } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
-import { motion } from 'framer-motion';
+import { LayoutDashboard, ListTodo, User, LogOut, X } from 'lucide-react';
 import { ShieldCheckIcon } from '@heroicons/react/24/outline';
+import { motion } from 'framer-motion';
+
+// NOTE: useAuth is commented out as it's not provided by the user.
+// import { useAuth } from '../../context/AuthContext';
 
 const navItems = [
-  { path: '/user/dashboard', label: 'Dashboard', icon: Home },
-  { path: '/user/raise-problem', label: 'Raise a Problem', icon: MessageCircle },
-  { path: '/user/my-reports', label: 'My Reports', icon: FileText },
-  { path: '/user/local-issues', label: 'Local Issues', icon: MapPin },
-  { path: '/user/departments', label: 'Departments', icon: Building2 },
-  { path: '/user/profile', label: 'My Profile', icon: User },
+  { path: '/staff/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { path: '/staff/issues', label: 'My Issues', icon: ListTodo },
+  { path: '/staff/profile', label: 'Profile', icon: User },
 ];
 
-const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
+const StaffSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
+  // const { logout } = useAuth();
   const location = useLocation();
-  const { logout } = useAuth();
 
-  const isActivePath = (path) => {
-    return location.pathname === path;
-  };
+  const isActivePath = (path) => location.pathname === path;
 
   const handleLinkClick = () => {
     if (isSidebarOpen) {
-      setIsSidebarOpen(false); // Close sidebar on mobile after clicking a link
+      setIsSidebarOpen(false); // Close sidebar on mobile after clicking
     }
   };
 
+  const handleLogout = () => {
+    // logout();
+    console.log("Staff logout initiated.");
+  };
+
   return (
-    <aside className="h-full overflow-y-auto p-6 flex flex-col justify-between transition-all duration-300 transform bg-white shadow-lg border-r">
+    <aside className="h-full overflow-y-auto p-6 flex flex-col justify-between 
+  transition-all duration-300 transform bg-white shadow-lg border-r">
       <div className="space-y-6">
         {/* Mobile close button */}
         <div className="flex items-center justify-between md:hidden">
-          <button onClick={() => setIsSidebarOpen(false)} className="p-2 rounded-md text-gray-500 hover:bg-gray-100">
+          <button
+            onClick={() => setIsSidebarOpen(false)}
+            className="p-2 rounded-md text-gray-500 hover:bg-gray-100"
+          >
             <X className="w-6 h-6" />
           </button>
         </div>
 
         {/* Logo */}
         <div className="hidden md:flex items-center space-x-3 mb-8">
-            <motion.div
+          <motion.div
             className="flex items-center space-x-3"
             whileHover={{ scale: 1.05 }}
             transition={{ type: 'spring', stiffness: 400, damping: 25 }}
             aria-label="Logo"
           >
             <ShieldCheckIcon
-              className="h-8 w-8 text-brand-blue-500"
+              className="h-10 w-10 text-brand-blue-500"
               aria-hidden="true"
             />
-            <span className="text-xl font-bold text-text-primary dark:text-white">
+            <span className="text-2xl font-bold text-gray-900">
               Nivaran
             </span>
           </motion.div>
         </div>
-        
+
         {/* Navigation */}
         <nav className="space-y-2">
           {navItems.map(({ path, label, icon: Icon }) => (
@@ -69,8 +75,18 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
               }`}
             >
-              <Icon className={`w-5 h-5 ${isActivePath(path) ? 'text-white' : 'text-gray-400 group-hover:text-gray-600'}`} />
-              <span className={`font-medium ${isActivePath(path) ? 'text-white' : 'text-gray-700'}`}>{label}</span>
+              <Icon
+                className={`w-5 h-5 ${
+                  isActivePath(path) ? 'text-white' : 'text-gray-400 group-hover:text-gray-600'
+                }`}
+              />
+              <span
+                className={`font-medium ${
+                  isActivePath(path) ? 'text-white' : 'text-gray-700'
+                }`}
+              >
+                {label}
+              </span>
             </Link>
           ))}
         </nav>
@@ -79,7 +95,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
       {/* Logout */}
       <div className="mt-8">
         <button
-          onClick={logout}
+          onClick={handleLogout}
           className="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-lg text-gray-600 hover:bg-red-100 hover:text-red-600 transition-colors duration-200"
         >
           <LogOut className="w-5 h-5" />
@@ -90,4 +106,4 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   );
 };
 
-export default Sidebar;
+export default StaffSidebar;

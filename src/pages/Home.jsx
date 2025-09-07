@@ -40,6 +40,19 @@ const Home = () => {
     navigate('/admin/dashboard'); // Redirect to the admin dashboard
   };
 
+  // Function to simulate a staff login
+  const handleSimulatedStaffLogin = () => {
+    // A separate mock user object for the staff role
+    const mockStaff = {
+      id: 3,
+      name: 'Rohan Sharma',
+      role: 'staff',
+      token: 'mock-token-staff-789',
+    };
+    login(mockStaff);
+    navigate('/staff/dashboard'); // Redirect to the staff dashboard
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -54,6 +67,26 @@ const Home = () => {
         <HowItWorks />
         <Features />
         <CallToAction />
+        <div className="text-center mt-10 space-y-4">
+          <button
+            onClick={handleSimulatedUserLogin}
+            className="bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+          >
+            Simulate User Login
+          </button>
+          <button
+            onClick={handleSimulatedAdminLogin}
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors ml-4"
+          >
+            Simulate Admin Login
+          </button>
+          <button
+            onClick={handleSimulatedStaffLogin}
+            className="bg-teal-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors ml-4"
+          >
+            Simulate Staff Login
+          </button>
+        </div>
       </main>
       <Footer />
     </motion.div>
